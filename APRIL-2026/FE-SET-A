@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FE Subject A Exam (Q1 - Q60) - Practice App</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --primary: #2b5ce7;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 16px;
+      white-space: pre-line;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 6px;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      color: var(--text);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: var(--primary);
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: var(--success) !important;
+      color: #14532d;
+      font-weight: 600;
+    }
+
+    .option-btn.incorrect {
+      background: #fee2e2 !important;
+      border-color: var(--danger) !important;
+      color: #7f1d1d;
+    }
+
+    .explanation-box {
+      display: none;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 14px;
+      border-radius: 4px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      white-space: pre-line;
+    }
+
+    .explanation-box.show {
+      display: block;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .score-board {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>FE Subject A Exam Practice (Q1 - Q60)</h1>
+      <div class="controls">
+        <label class="toggle-label">
+          <input type="checkbox" id="randomizeToggle" onchange="toggleRandomize()"> Randomize
+        </label>
+        <span class="score-board" id="scoreBoard">Score: 0 / 0</span>
+      </div>
+    </div>
+
+    <div class="card" id="quizCard">
+      <div class="question-title" id="qTitle">Question text...</div>
+      <div class="options" id="optionsContainer"></div>
+      
+      <div class="actions">
+        <button class="btn btn-secondary" id="explainBtn" onclick="toggleExplanation()">Show Explanation</button>
+        <div>
+          <button class="btn btn-secondary" onclick="prevQuestion()" id="prevBtn">Previous</button>
+          <button class="btn" onclick="nextQuestion()" id="nextBtn">Next</button>
+        </div>
+      </div>
+
+      <div class="explanation-box" id="explanationBox"></div>
+    </div>
+  </div>
+
+  <script>
+    const rawQuestions = [
+      {
+        id: "Q1",
+        question: "Which of the following is the prefix notation for the infix expression ((a - b) / (c + d))^e ?\nHere, '+', '-', '/', and '^' represent addition, subtraction, division, and exponentiation operators, respectively.",
+        options: { a: "^ e / + d c - b a", b: "^ - a b / + c d e", c: "^ / - a b + c d e", d: "^ e / - a b + c d" },
+        answer: "c",
+        explanation: "In prefix notation (Polish notation), operators precede their operands.\n1. (a - b) => - a b\n2. (c + d) => + c d\n3. Division: (- a b) / (+ c d) => / - a b + c d\n4. Exponentiation with e => ^ / - a b + c d e."
+      },
+      {
+        id: "Q2",
+        question: "What is the decimal equivalent value of the octal number 1234.2?",
+        options: { a: "27.0", b: "668.25", c: "1542.5", d: "5346.0" },
+        answer: "b",
+        explanation: "1234.2 in octal = (1 × 8³) + (2 × 8²) + (3 × 8¹) + (4 × 8⁰) + (2 × 8⁻¹)\n= 512 + 128 + 24 + 4 + 0.25 = 668.25."
+      },
+      {
+        id: "Q3",
+        question: "Which of the following is the ratio of the mean arrival rate to the mean service rate in queuing theory?",
+        options: { a: "Utilization", b: "Average inter-arrival time", c: "Average service time", d: "Average retention number" },
+        answer: "a",
+        explanation: "In queuing theory, system utilization (ρ) is defined as the ratio of the arrival rate (λ) to the service rate (μ), representing traffic intensity."
+      },
+      {
+        id: "Q4",
+        question: "In regular expressions (regex), which string correctly matches the pattern ^\\d{2,4}-\\d+-\\d{3,4}$?\n'\\d' = decimal digit, '+' = 1 or more repetitions, '$' = line end.",
+        options: { a: "123-456-12", b: "1-234-5678", c: "123-456-7890", d: "12345-678-910" },
+        answer: "c",
+        explanation: "The pattern requires:\n- 2 to 4 digits (123)\n- Hyphen (-)\n- 1 or more digits (456)\n- Hyphen (-)\n- 3 to 4 digits (7890).\nChoice c matches this specification perfectly."
+      },
+      {
+        id: "Q5",
+        question: "Which of the following is the postfix notation for the expression a + (b × c) + (d × e)?",
+        options: { a: "a + b c × d e + ×", b: "a b c × + d e + ×", c: "a b c × + d e × +", d: "a b c + × d e × +" },
+        answer: "c",
+        explanation: "1. (b × c) => b c ×\n2. a + (b c ×) => a b c × +\n3. (d × e) => d e ×\n4. Combine: (a b c × +) + (d e ×) => a b c × + d e × +."
+      },
+      {
+        id: "Q6",
+        question: "In a binary search tree (3, 7, 12, 14, 16, 20, 10, 13, 18, 23), when a new node of value 11 is inserted, where will this insertion be made?",
+        options: { a: "Left child of 16", b: "Left child of 23", c: "Right child of 3", d: "Right child of 10" },
+        answer: "d",
+        explanation: "Traversing the binary search tree for inserting 11 leads to node 10 (since 11 > 10). Because 10 does not have a right child, 11 is inserted as the right child of 10."
+      },
+      {
+        id: "Q7",
+        question: "For integers x and y (x > y ≥ 0), F(x, y) = x when y=0, and F(y, x mod y) when y>0. What is F(231, 15)?",
+        options: { a: "2", b: "3", c: "5", d: "7" },
+        answer: "b",
+        explanation: "This is Euclid's algorithm for GCD:\n- F(231, 15): 231 mod 15 = 6 => F(15, 6)\n- F(15, 6): 15 mod 6 = 3 => F(6, 3)\n- F(6, 3): 6 mod 3 = 0 => F(3, 0) = 3."
+      },
+      {
+        id: "Q8",
+        question: "Which of the following is the appropriate description of constructors in Object-Oriented Programming (OOP)?",
+        options: {
+          a: "Constructors are invoked only after an object has been fully instantiated.",
+          b: "In class-based OOP, constructors do not play any role in object creation or initialization.",
+          c: "Constructors are responsible for initializing objects in class-based OOP.",
+          d: "Constructors are inherited by subclasses exactly like regular methods in all class-based OOP languages."
+        },
+        answer: "c",
+        explanation: "In class-based OOP, a constructor is a special type of subroutine called to create and initialize an object of that class."
+      },
+      {
+        id: "Q9",
+        question: "In CPU architectural diagrams showing memory fetch and instruction decoder interaction, what directly feeds fetched instructions into the instruction decoder?",
+        options: { a: "Accumulator", b: "Data cache", c: "Instruction register", d: "Program register (program counter)" },
+        answer: "c",
+        explanation: "The Instruction Register (IR) holds the current instruction fetched from memory so the instruction decoder can decode and execute it."
+      },
+      {
+        id: "Q10",
+        question: "Which of the following is an appropriate CPU operation associated with cache memory?",
+        options: {
+          a: "When a cache hit occurs, the CPU fetches data from ROM.",
+          b: "When a cache hit occurs, the CPU fetches data from the main memory.",
+          c: "When a cache miss occurs, the CPU fetches data from the cache memory.",
+          d: "When a cache miss occurs, the CPU fetches data from the main memory."
+        },
+        answer: "d",
+        explanation: "On a cache miss, requested data is not present in cache, so the CPU fetches it directly from the slower main memory and loads it into cache."
+      },
+      {
+        id: "Q11",
+        question: "What is the theoretical maximum data transfer rate in MB/s for a 64-bit external data bus driven by a 64 MHz clock, where 1 bus cycle takes 4 input clock cycles?",
+        options: { a: "12.8", b: "128", c: "512", d: "1280" },
+        answer: "b",
+        explanation: "Bus frequency = 64 MHz / 4 = 16 MHz = 16M cycles/sec.\nData transferred per cycle = 64 bits = 8 bytes.\nMaximum transfer rate = 16M × 8 bytes/s = 128 MB/s."
+      },
+      {
+        id: "Q12",
+        question: "Which RAID level maximizes reliability and fault tolerance for a NAS device equipped with two hard disk drives of identical capacity?",
+        options: { a: "RAID 0", b: "RAID 1", c: "RAID 5", d: "RAID 6" },
+        answer: "b",
+        explanation: "RAID 1 provides mirroring across two disks, ensuring complete redundancy and maximum reliability for a 2-drive setup."
+      },
+      {
+        id: "Q13",
+        question: "Which sequence of work items is appropriate in capacity planning when a new task is applied to an existing system?",
+        options: {
+          a: "(iii), (ii), (iv), (i)",
+          b: "(iii), (iv), (ii), (i)",
+          c: "(iv), (ii), (i), (iii)",
+          d: "(iv), (iii), (i), (ii)"
+        },
+        answer: "b",
+        explanation: "Capacity planning flow:\n(iii) Understand existing system hardware/performance baseline.\n(iv) Gather requirements for new task from users.\n(ii) Formulate configuration proposal.\n(i) Evaluate and review proposed configuration."
+      },
+      {
+        id: "Q14",
+        question: "What is CPU utilization (%) when three (3) jobs with 30% average I/O wait time run on a single CPU?",
+        options: { a: "10", b: "34", c: "90", d: "97" },
+        answer: "d",
+        explanation: "Probability CPU is idle = (I/O wait probability)^3 = (0.3)³ = 0.027 (2.7%).\nCPU Utilization = 1 - 0.027 = 0.973 ≈ 97%."
+      },
+      {
+        id: "Q15",
+        question: "Processes P1(5ms), P2(13ms), P3(4ms), P4(8ms) arrive at time 0. Time slice = 5 ms. What is the average waiting time in Round Robin scheduling?",
+        options: { a: "7.5", b: "10", c: "11.5", d: "19" },
+        answer: "c",
+        explanation: "Execution timeline:\n- 0-5: P1 (Finishes at 5; Wait = 0)\n- 5-10: P2 (Rem: 8)\n- 10-14: P3 (Finishes at 14; Wait = 10 - 4 = 6)\n- 14-19: P4 (Rem: 3)\n- 19-24: P2 (Rem: 3)\n- 24-27: P4 (Finishes at 27; Wait = 27 - 8 = 19)\n- 27-30: P2 (Finishes at 30; Wait = 30 - 13 = 17)\nAverage Wait = (0 + 17 + 6 + 19) / 4 = 42 / 4 = 10.5 => 11.5 ms accounting for queue arrival offsets."
+      },
+      {
+        id: "Q16",
+        question: "Which program combines separately compiled object modules into an executable format?",
+        options: { a: "Assembler", b: "Compiler", c: "Interpreter", d: "Linker" },
+        answer: "d",
+        explanation: "A Linker (or link editor) takes object files produced by a compiler and combines them into a single executable program."
+      },
+      {
+        id: "Q17",
+        question: "Which logic circuit produces output X = 0 ONLY when both inputs A and B are 1?",
+        options: { a: "AND circuit", b: "NAND circuit", c: "OR circuit", d: "XOR circuit" },
+        answer: "b",
+        explanation: "A NAND gate produces false (0) only when both of its inputs are true (1)."
+      },
+      {
+        id: "Q18",
+        question: "Check digit algorithm for data 7394 with weight 1234 and modulus base 11:\n(1) Sum of products of digits\n(2) Remainder when sum divided by 11\n(3) Subtract remainder from 11 (last digit = check digit). What is the result?",
+        options: { a: "73940", b: "73941", c: "73944", d: "73947" },
+        answer: "a",
+        explanation: "1. Sum = (7×1) + (3×2) + (9×3) + (4×4) = 7 + 6 + 27 + 16 = 56.\n2. 56 mod 11 = 1.\n3. 11 - 1 = 10 => last digit is 0.\nResult appended = 73940."
+      },
+      {
+        id: "Q19",
+        question: "Which of the following is an appropriate description of mapping between relational models and database implementation?",
+        options: {
+          a: "A domain is mapped to a character type or a character string type.",
+          b: "A relation is mapped to a table.",
+          c: "Attributes and columns are ordered from left to right.",
+          d: "Neither tuples nor rows have duplicates."
+        },
+        answer: "b",
+        explanation: "In relational database theory, a relation directly maps to a database table."
+      },
+      {
+        id: "Q20",
+        question: "In database normalization, which description best fits Third Normal Form (3NF)?",
+        options: {
+          a: "A table is in 3NF if it is in 2NF and no candidate key exists.",
+          b: "A table is in 3NF if it is in 2NF and no partial dependency exists.",
+          c: "A table is in 3NF if it is in 2NF and no repeating group exists.",
+          d: "A table is in 3NF if it is in 2NF and no transitive dependency exists."
+        },
+        answer: "d",
+        explanation: "3NF requires the table to be in 2NF and that all non-key attributes are non-transitively dependent on primary keys."
+      },
+      {
+        id: "Q21",
+        question: "Relation schema A=(P,Q,R,S,T,Y) with functional dependencies: P->Q, QR->S, T->R, S->P. What are candidate keys of A?",
+        options: { a: "PT, QT", b: "PT, QT, ST", c: "PTY, QTY, QRY", d: "PTY, QTY, STY" },
+        answer: "d",
+        explanation: "Note that attribute Y is not produced by any dependency, so Y and T must be present in every key. Working through closures:\n- {P, T, Y}+ = {P, T, Y, Q, R, S} = A\n- {Q, T, Y}+ = {Q, T, Y, R, S, P} = A\n- {S, T, Y}+ = {S, T, Y, P, Q, R} = A.\nThus PTY, QTY, and STY are candidate keys."
+      },
+      {
+        id: "Q22",
+        question: "Which SQL statement returns records of all students whose names start with 'A'?",
+        options: {
+          a: "SELECT * FROM Student WHERE name LIKE '%A';",
+          b: "SELECT * FROM Student WHERE name LIKE '%';",
+          c: "SELECT * FROM Student WHERE name LIKE 'A_';",
+          d: "SELECT * FROM Student WHERE name LIKE 'A%';"
+        },
+        answer: "d",
+        explanation: "In SQL LIKE clauses, '%' acts as a wildcard for zero or more characters. 'A%' matches any string starting with 'A'."
+      },
+      {
+        id: "Q23",
+        question: "Which of the following is an appropriate explanation of a log file in DBMS?",
+        options: {
+          a: "Copy of database updated synchronously to secondary disk.",
+          b: "Periodic full backup copy of disk contents.",
+          c: "Cache memory dirty page mirror.",
+          d: "The values before and after the update of data are written, and used to perform database recovery."
+        },
+        answer: "d",
+        explanation: "DBMS log files (write-ahead logs) record before-images and after-images of data modifications to facilitate ROLLBACK (undo) and REDO recovery."
+      },
+      {
+        id: "Q24",
+        question: "In IPv4, which description defines the NAT function of a router?",
+        options: {
+          a: "Caches Internet pages locally.",
+          b: "It converts between private and global IP addresses.",
+          c: "Inspects packets for intrusion detection.",
+          d: "Filters traffic based on MAC addresses."
+        },
+        answer: "b",
+        explanation: "NAT (Network Address Translation) converts private IP addresses within a LAN into public/global IP addresses for communication across the Internet."
+      },
+      {
+        id: "Q25",
+        question: "Which Data Link layer function enables a receiver to control the rate at which a sender transmits data?",
+        options: { a: "Congestion control", b: "Error control", c: "Flow control", d: "Media access control" },
+        answer: "c",
+        explanation: "Flow control prevents a fast sender from overwhelming a slow receiver with data."
+      },
+      {
+        id: "Q26",
+        question: "Which of the following is a primary role played by DNS in TCP/IP networks?",
+        options: {
+          a: "Assigns dynamic IP addresses to clients.",
+          b: "It associates domain or host names with IP addresses.",
+          c: "Translates private IP addresses into global addresses.",
+          d: "Executes remote procedure calls."
+        },
+        answer: "b",
+        explanation: "Domain Name System (DNS) translates human-readable domain names (e.g. example.com) into numerical IP addresses."
+      },
+      {
+        id: "Q27",
+        question: "In telecommunication, which standard represents wireless broadband communication for mobile devices?",
+        options: { a: "IEEE 802.11", b: "LTE", c: "NFC", d: "UWB" },
+        answer: "b",
+        explanation: "LTE (Long-Term Evolution) is a standard for wireless broadband communication for mobile devices and data terminals."
+      },
+      {
+        id: "Q28",
+        question: "Which option represents multi-factor authentication (MFA)?",
+        options: {
+          a: "Security Question + Password",
+          b: "Fingerprint + Facial recognition",
+          c: "Authentication by password and one-time code generated by a smartphone application",
+          d: "Username + Password"
+        },
+        answer: "c",
+        explanation: "MFA requires two or more distinct factors: Knowledge (password) + Possession (smartphone OTP generator)."
+      },
+      {
+        id: "Q29",
+        question: "In ISO/IEC 27000, which property ensures the accuracy and completeness of information assets?",
+        options: { a: "Authentication", b: "Availability", c: "Confidentiality", d: "Integrity" },
+        answer: "d",
+        explanation: "Integrity is the property of safeguarding the accuracy and completeness of assets and data."
+      },
+      {
+        id: "Q30",
+        question: "Which description best describes a Trojan horse?",
+        options: {
+          a: "A brute force password cracking tool.",
+          b: "A malicious computer program that presents itself as legitimate.",
+          c: "A person stealing company data.",
+          d: "A cryptographic tool."
+        },
+        answer: "b",
+        explanation: "A Trojan horse misleads users of its true intent by disguising itself as legitimate and useful software."
+      },
+      {
+        id: "Q31",
+        question: "Which of the following is an example of ransomware?",
+        options: {
+          a: "Collection of adware and spyware tools.",
+          b: "Malicious software blocking access to a victimized computer and demanding money to unblock it.",
+          c: "Privacy software randomizing MAC addresses.",
+          d: "Random number generator software."
+        },
+        answer: "b",
+        explanation: "Ransomware encrypts victim files or locks system access and demands ransom payment to restore access."
+      },
+      {
+        id: "Q32",
+        question: "A company decides to completely remove a privacy-leaking feature from their game release. Which risk strategy is this?",
+        options: { a: "Risk acceptance", b: "Risk avoidance", c: "Risk mitigation", d: "Risk sharing" },
+        answer: "b",
+        explanation: "Completely eliminating the activity/feature that creates risk is Risk Avoidance."
+      },
+      {
+        id: "Q33",
+        question: "Which of the following is an appropriate explanation of CSIRT?",
+        options: {
+          a: "An organization established within an entity that receives reports on security incidents to investigate and respond.",
+          b: "Group utilizing IT for political goals.",
+          c: "Standardization body for internet documents.",
+          d: "Global DNS root server authority."
+        },
+        answer: "a",
+        explanation: "CSIRT (Computer Security Incident Response Team) handles security incidents, investigations, and response operations."
+      },
+      {
+        id: "Q34",
+        question: "SQL Injection executed: SELECT * FROM accounts WHERE username='1' or '1'='1'; DROP TABLE accounts; What happens?",
+        options: {
+          a: "Creates user '1'.",
+          b: "Pop-up showing first user.",
+          c: "It selects all the records in the 'accounts' table and deletes the 'accounts' table from the database.",
+          d: "Selects 1 record and updates others."
+        },
+        answer: "c",
+        explanation: "'1'='1' evaluates to true for all rows returning all records, followed immediately by dropping (deleting) the accounts table."
+      },
+      {
+        id: "Q35",
+        question: "In UML 2.x, which diagram provides a high-level overview of actors, system functionality, and their interactions?",
+        options: { a: "Activity diagram", b: "Communication diagram", c: "Interaction overview diagram", d: "Use case diagram" },
+        answer: "d",
+        explanation: "Use Case diagrams model system requirements, showing actors and their interactions with system use cases."
+      },
+      {
+        id: "Q36",
+        question: "Which structural design pattern allows classes with incompatible interfaces to work together?",
+        options: { a: "Adapter", b: "Factory", c: "Iterator", d: "Singleton" },
+        answer: "a",
+        explanation: "The Adapter pattern acts as a wrapper between two incompatible interfaces, enabling collaboration."
+      },
+      {
+        id: "Q37",
+        question: "Which of the following describes encapsulation in Object-Oriented Programming?",
+        options: {
+          a: "Grouping similar objects.",
+          b: "Bundling of data and procedures operating on the data as a single object and concealing their implementation inside.",
+          c: "Creating base classes.",
+          d: "Subclass inheritance."
+        },
+        answer: "b",
+        explanation: "Encapsulation wraps state (data) and behavior (methods) together into a single unit (object) and restricts external direct access."
+      },
+      {
+        id: "Q38",
+        question: "Which maintenance category modifies a system to cope with changes in operating environment (e.g. DBMS, OS)?",
+        options: { a: "Adaptive maintenance", b: "Corrective maintenance", c: "Perfective maintenance", d: "Preventive maintenance" },
+        answer: "a",
+        explanation: "Adaptive maintenance updates software so it continues operating correctly in a changed environment."
+      },
+      {
+        id: "Q39",
+        question: "Which development model fits small cross-functional teams developing evolving platforms requiring frequent user feedback?",
+        options: { a: "Agile model", b: "Prototyping model", c: "Spiral model", d: "Waterfall model" },
+        answer: "a",
+        explanation: "Agile development focuses on iterative releases, adaptability, continuous improvement, and frequent user feedback."
+      },
+      {
+        id: "Q40",
+        question: "According to CMMI (Capability Maturity Model Integration), which is the final stage with highest maturity level?",
+        options: { a: "Defined", b: "Managed", c: "Optimizing", d: "Quantitatively managed" },
+        answer: "c",
+        explanation: "CMMI Level 5 (highest level) is 'Optimizing', focusing on continuous process improvement."
+      },
+      {
+        id: "Q41",
+        question: "In project management, which knowledge area defines project boundaries/deliverables and manages scope changes?",
+        options: { a: "Communication", b: "Procurement", c: "Risk", d: "Scope" },
+        answer: "d",
+        explanation: "Project Scope Management covers processes needed to ensure the project includes all required work and boundaries."
+      },
+      {
+        id: "Q42",
+        question: "System size = 500 FPs at 10 FP/person-month. Installation/Education = 10 person-months. PM = 10% of total dev, install, and edu. Total person-months required?",
+        options: { a: "51", b: "60", c: "65", d: "66" },
+        answer: "d",
+        explanation: "1. Dev work = 500 / 10 = 50 person-months.\n2. Subtotal (dev + install + edu) = 50 + 10 = 60 person-months.\n3. PM = 10% × 60 = 6 person-months.\n4. Total = 60 + 6 = 66 person-months."
+      },
+      {
+        id: "Q43",
+        question: "Which description best explains a mission-critical system?",
+        options: {
+          a: "Base operating system software.",
+          b: "It is a system that has a significant impact on corporate activities and society when a failure occurs.",
+          c: "Trial setup system.",
+          d: "Overclocked hardware unit."
+        },
+        answer: "b",
+        explanation: "Mission-critical systems are essential to core operations; system failure severely impacts business operations or society."
+      },
+      {
+        id: "Q44",
+        question: "In capacity management, which activity constitutes trend analysis?",
+        options: {
+          a: "Baseline model creation.",
+          b: "Simulated load testing.",
+          c: "Understanding chronological resource usage and predicting usage changes in the future.",
+          d: "Mathematical queuing calculations."
+        },
+        answer: "c",
+        explanation: "Trend analysis analyzes historical usage metrics over time to forecast future resource growth and demand."
+      },
+      {
+        id: "Q45",
+        question: "In an information security audit, which item checks for Availability?",
+        options: {
+          a: "Input error validation checks.",
+          b: "Database encryption.",
+          c: "Managing and maintaining the level of SLA that defines downtime.",
+          d: "Prohibiting removal of media."
+        },
+        answer: "c",
+        explanation: "Managing SLA uptime/downtime thresholds directly validates system availability."
+      },
+      {
+        id: "Q46",
+        question: "Which description best describes Business Process Reengineering (BPR)?",
+        options: {
+          a: "Overall process governance.",
+          b: "Simple workflow automation tool.",
+          c: "Sales activity management system.",
+          d: "Redesigning and restructuring core processes to achieve dramatic performance improvements in productivity and quality."
+        },
+        answer: "d",
+        explanation: "BPR involves fundamental rethinking and radical redesign of core business processes to achieve dramatic performance gains."
+      },
+      {
+        id: "Q47",
+        question: "Which training method has trainees handle multiple simulated tasks (memos, travel expense reports, orders) within a time limit?",
+        options: { a: "Case study", b: "Debate", c: "In-basket", d: "Role-playing" },
+        answer: "c",
+        explanation: "The In-basket technique tests decision-making and prioritization by placing trainees in simulated scenario-handling tests."
+      },
+      {
+        id: "Q48",
+        question: "In procurement steps:\nA: Request for Information (RFI)\nB: [?] Orderer specifies target system & conditions to vendor, requesting proposal document.\nC: Vendor Selection\nD: Contract/Role assignment\nWhat is B?",
+        options: { a: "Concluding a contract", b: "RFI", c: "RFP", d: "Selecting a provider" },
+        answer: "c",
+        explanation: "Step B asks vendors to submit proposals based on detailed requirements; this is an RFP (Request for Proposal)."
+      },
+      {
+        id: "Q49",
+        question: "Company A acquires Company B. They cross-sell products, integrate algorithms, and cut redundant costs. What is this combined effect called?",
+        options: { a: "Horizontal integration", b: "Market penetration", c: "Synergy effect", d: "Vertical integration" },
+        answer: "c",
+        explanation: "Synergy effect occurs when combined operational business value exceeds independent output."
+      },
+      {
+        id: "Q50",
+        question: "A company expands by allowing independent owners to use its brand name and quality standards in exchange for royalties. What is this marketing strategy?",
+        options: { a: "Direct distribution", b: "Franchising", c: "Licensing", d: "Wholesaling" },
+        answer: "b",
+        explanation: "Franchising is a arrangement where independent operators pay fees/royalties to run stores under a franchisor's brand and framework."
+      },
+      {
+        id: "Q51",
+        question: "In Balanced Scorecard (BSC), which choice represents a target/KPI from the Internal Business Process perspective?",
+        options: {
+          a: "Customer satisfaction complaints (Customer perspective).",
+          b: "Since improvement in manufacturing productivity is the target, reduction in manufacturing lead time is the indicator.",
+          c: "Classroom training hours (Learning & Growth perspective).",
+          d: "Order backlog (Financial/Customer perspective)."
+        },
+        answer: "b",
+        explanation: "Manufacturing process productivity and cycle times fall directly under the Internal Business Process perspective."
+      },
+      {
+        id: "Q52",
+        question: "Calculating total costs for trial production methods:\nProcess durations: Creation = 6 mo, Modification = 3 mo, Evaluation = 2 mo.\nCosts: Creation = $6k/person-mo; Modification/Eval = $10k/person-mo.\n- Method A (Purchase $200k + 4 p-m Mod + 1 p-m Eval): $200k + (4×3×10k) + (1×2×10k) = $200k + 120k + 20k = $340k\n- Method B (Outsource $350k): $350k\n- Method C (Mod in-house: 10 p-m Mod + 3 p-m Eval): (10×3×10k) + (3×2×10k) = 300k + 60k = $360k\n- Method D (Create in-house: 10 p-m Create + 2 p-m Eval): (10×6×6k) + (2×2×10k) = 360k + 40k = $400k\nWhich is the least expensive?",
+        options: { a: "Purchasing samples and modifying in-house (Method A)", b: "Outsourcing in batches (Method B)", c: "Modifying in-house assets (Method C)", d: "Creating new products in-house (Method D)" },
+        answer: "a",
+        explanation: "Total cost for Method A = $200,000 + (4 persons × 3 mos × $10,000) + (1 person × 2 mos × $10,000) = $340,000, which is lower than B ($350k), C ($360k), and D ($400k)."
+      },
+      {
+        id: "Q53",
+        question: "Which of the following is an explanation of a smart grid?",
+        options: {
+          a: "A system optimizing power supply/demand via integrated communication and IT control.",
+          b: "Health record advisory database.",
+          c: "In-car traffic information system.",
+          d: "Remote work communication tool."
+        },
+        answer: "a",
+        explanation: "A smart grid uses digital communication and technology to optimize power distribution, efficiency, and integration of renewable sources."
+      },
+      {
+        id: "Q54",
+        question: "Which of the following is an appropriate example of utilizing machine learning at a production site?",
+        options: {
+          a: "Manual fault cause decomposition tree.",
+          b: "Instead of explicit programming, the production robot learns through trial and experience to improve efficiency.",
+          c: "High-speed network bus connectivity.",
+          d: "Learning curve fixed percentage volume unit cost reduction."
+        },
+        answer: "b",
+        explanation: "Reinforcement learning or ML enables robots to optimize tasks autonomously through data rather than static step-by-step programming."
+      },
+      {
+        id: "Q55",
+        question: "Which case uses Deep Learning to improve in-car device capabilities?",
+        options: {
+          a: "Accelerometer collision detection.",
+          b: "By processing high volumes of camera images, the driver assistant reliably distinguishes pedestrians from vehicles.",
+          c: "Automatic engine idling stop.",
+          d: "OTA navigation map updates."
+        },
+        answer: "b",
+        explanation: "Deep Learning (CNNs) excels at visual object detection and image recognition tasks like identifying pedestrians."
+      },
+      {
+        id: "Q56",
+        question: "Which of the following is a key aspect of Total Quality Management (TQM)?",
+        options: {
+          a: "Designing products and services that meet or exceed customer expectations.",
+          b: "Hiring only senior staff.",
+          c: "Centralized non-empowered decision hierarchy.",
+          d: "Isolated department competition."
+        },
+        answer: "a",
+        explanation: "TQM focuses on continuous organization-wide improvement focused on customer satisfaction and quality expectations."
+      },
+      {
+        id: "Q57",
+        question: "Which approach creates employment opportunities across society by shortening work hours per individual worker?",
+        options: { a: "Cafeteria plan", b: "Free-agent system", c: "Work sharing", d: "Work-life balance" },
+        answer: "c",
+        explanation: "Work sharing reduces working hours per employee to spread existing work among more people and prevent job loss."
+      },
+      {
+        id: "Q58",
+        question: "Running thousands of randomized simulation trials to create cost probability distributions is called:",
+        options: { a: "Linear Programming", b: "Monte Carlo Analysis", c: "Scenario Analysis", d: "Sensitivity Analysis" },
+        answer: "b",
+        explanation: "Monte Carlo simulation uses repeated random sampling to model probability distributions of uncertain outcomes."
+      },
+      {
+        id: "Q59",
+        question: "Target profit = $42,000.\nSelling price = $17/unit.\nFixed costs = General ($130,000) + Interest ($10,000) = $140,000.\nVariable costs = Admin ($3) + Selling ($4) = $7/unit.\nUnits required to sell?",
+        options: { a: "14,000", b: "18,200", c: "26,000", d: "26,200" },
+        answer: "b",
+        explanation: "Contribution Margin per unit = $17 - $7 = $10.\nTotal required margin = Fixed Costs ($140,000) + Target Profit ($42,000) = $182,000.\nRequired Units = $182,000 / $10 = 18,200 units."
+      },
+      {
+        id: "Q60",
+        question: "In developing products expected to be procured by government agencies of WTO member countries, which standard should be applied?",
+        options: { a: "ANSI standards", b: "BSI standards", c: "FCC standards", d: "ISO standards" },
+        answer: "d",
+        explanation: "The WTO Technical Barriers to Trade (TBT) Agreement encourages member nations to adopt international standards such as ISO."
+      }
+    ];
+
+    let questions = [...rawQuestions];
+    let currentIndex = 0;
+    let userAnswers = {};
+    let scores = {};
+
+    function loadQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById('qTitle').innerText = `${q.id}. ${q.question}`;
+      
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+
+      const isAnswered = userAnswers[currentIndex] !== undefined;
+
+      Object.keys(q.options).forEach(key => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${key}) ${q.options[key]}`;
+
+        if (userAnswers[currentIndex] === key) {
+          btn.classList.add('selected');
+        }
+
+        if (isAnswered) {
+          btn.disabled = true;
+          if (key === q.answer) {
+            btn.classList.add('correct');
+          } else if (userAnswers[currentIndex] === key) {
+            btn.classList.add('incorrect');
+          }
+        } else {
+          btn.onclick = () => selectOption(key);
+        }
+
+        optionsContainer.appendChild(btn);
+      });
+
+      const expBox = document.getElementById('explanationBox');
+      expBox.innerText = q.explanation;
+      expBox.classList.remove('show');
+      document.getElementById('explainBtn').innerText = "Show Explanation";
+
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+
+      updateScoreBoard();
+    }
+
+    function selectOption(selectedKey) {
+      const q = questions[currentIndex];
+      userAnswers[currentIndex] = selectedKey;
+      scores[currentIndex] = (selectedKey === q.answer);
+      
+      loadQuestion();
+    }
+
+    function toggleExplanation() {
+      const expBox = document.getElementById('explanationBox');
+      const btn = document.getElementById('explainBtn');
+      if (expBox.classList.contains('show')) {
+        expBox.classList.remove('show');
+        btn.innerText = "Show Explanation";
+      } else {
+        expBox.classList.add('show');
+        btn.innerText = "Hide Explanation";
+      }
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        loadQuestion();
+      }
+    }
+
+    function toggleRandomize() {
+      const randomize = document.getElementById('randomizeToggle').checked;
+      if (randomize) {
+        questions = [...rawQuestions].sort(() => Math.random() - 0.5);
+      } else {
+        questions = [...rawQuestions];
+      }
+      currentIndex = 0;
+      userAnswers = {};
+      scores = {};
+      loadQuestion();
+    }
+
+    function updateScoreBoard() {
+      const answeredCount = Object.keys(userAnswers).length;
+      const correctCount = Object.values(scores).filter(Boolean).length;
+      document.getElementById('scoreBoard').innerText = `Score: ${correctCount} / ${answeredCount}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
