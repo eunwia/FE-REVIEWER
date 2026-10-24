@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>October 2025 FE Subject A Exam (Q1 - Q60) - Practice App</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --primary: #2b5ce7;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 16px;
+      white-space: pre-line;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 6px;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      color: var(--text);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: var(--primary);
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: var(--success) !important;
+      color: #14532d;
+      font-weight: 600;
+    }
+
+    .option-btn.incorrect {
+      background: #fee2e2 !important;
+      border-color: var(--danger) !important;
+      color: #7f1d1d;
+    }
+
+    .explanation-box {
+      display: none;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 14px;
+      border-radius: 4px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      white-space: pre-line;
+    }
+
+    .explanation-box.show {
+      display: block;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .score-board {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>October 2025 FE Subject A Exam Practice (Q1 - Q60)</h1>
+      <div class="controls">
+        <label class="toggle-label">
+          <input type="checkbox" id="randomizeToggle" onchange="toggleRandomize()"> Randomize
+        </label>
+        <span class="score-board" id="scoreBoard">Score: 0 / 0</span>
+      </div>
+    </div>
+
+    <div class="card" id="quizCard">
+      <div class="question-title" id="qTitle">Question text...</div>
+      <div class="options" id="optionsContainer"></div>
+      
+      <div class="actions">
+        <button class="btn btn-secondary" id="explainBtn" onclick="toggleExplanation()">Show Explanation</button>
+        <div>
+          <button class="btn btn-secondary" onclick="prevQuestion()" id="prevBtn">Previous</button>
+          <button class="btn" onclick="nextQuestion()" id="nextBtn">Next</button>
+        </div>
+      </div>
+
+      <div class="explanation-box" id="explanationBox"></div>
+    </div>
+  </div>
+
+  <script>
+    const rawQuestions = [
+      {
+        id: "Q1",
+        question: "In IEEE 754 single-precision format, a 32-bit floating point number is represented as (-1)^S × 2^(E-127) × (1 + F).\nWhat is the decimal equivalent of: 0 10000010 11000000000000000000000?",
+        options: { a: "0.1875", b: "0.4375", c: "6.0", d: "14.0" },
+        answer: "d",
+        explanation: "S = 0 (positive)\nE = 10000010_2 = 130 in decimal => Exponent = 130 - 127 = 3.\nF = 1100..._2 = 2^(-1) + 2^(-2) = 0.5 + 0.25 = 0.75.\nValue = (+1) × 2^3 × (1 + 0.75) = 8 × 1.75 = 14.0."
+      },
+      {
+        id: "Q2",
+        question: "Let n be a binary integer in two's complement. Which operation calculates 9 × n using only bit shifting and an addition/subtraction?",
+        options: {
+          a: "Shift n 2 bits to the left, then add n to the result.",
+          b: "Shift n 2 bits to the left, then subtract n from the result.",
+          c: "Shift n 3 bits to the left, then add n to the result.",
+          d: "Shift n 3 bits to the left, then subtract n from the result."
+        },
+        answer: "c",
+        explanation: "Shifting n left by 3 bits multiplies n by 2^3 = 8.\nAdding n to the result yields 8n + n = 9n."
+      },
+      {
+        id: "Q3",
+        question: "Three friends and 4 other people are randomly seated in 7 seats arranged in a row. What is the probability that the 3 friends sit next to one another?",
+        options: { a: "1/168", b: "1/42", c: "1/35", d: "1/7" },
+        answer: "d",
+        explanation: "Treat the group of 3 friends as 1 single block.\nTotal arrangements of 7 people = 7! = 5040.\nArrangements where 3 friends stay together = (5 blocks)! × 3! = 120 × 6 = 720.\nProbability = 720 / 5040 = 1/7."
+      },
+      {
+        id: "Q4",
+        question: "For the finite automaton state machine with initial state S1, transitions S1--(1/0)-->S2--(1/1)-->S3, what is the output string for input string '0011001110'?",
+        options: { a: "0001000110", b: "0001001110", c: "0010001000", d: "0011111110" },
+        answer: "a",
+        explanation: "Step-by-step state & output trace:\nIn S1: 0->0 (S1), 0->0 (S1), 1->0 (S2), 1->1 (S3), 0->0 (S1), 0->0 (S1), 1->0 (S2), 1->1 (S3), 1->1 (S3), 0->0 (S1).\nOutput = 0001000110."
+      },
+      {
+        id: "Q5",
+        question: "In a doubly linked list, Employee G is inserted between Employee A (addr 100) and Employee K (addr 300). Which pointer values change?",
+        options: { a: "a, b, e, f", b: "a, e, f", c: "a, f", d: "b, e" },
+        answer: "c",
+        explanation: "Original list: A (Next: 300), K (Prev: 100).\nWhen G is inserted between A and K:\n- A's NextPointer ('a') changes from 300 to G's address.\n- K's PreviousPointer ('f') changes from 100 to G's address.\nOnly pointers 'a' and 'f' change."
+      },
+      {
+        id: "Q6",
+        question: "In Euclid's GCD algorithm flowchart starting with a = 56, b = 48, how many times is loop point A passed?",
+        options: { a: "1", b: "2", c: "4", d: "8" },
+        answer: "b",
+        explanation: "Trace:\nLoop 1: r = 56 mod 48 = 8; a=48, b=8. r != 0, passes A back to top.\nLoop 2: r = 48 mod 8 = 0; a=8, b=0. r == 0, exits.\nLoop point A is passed 2 times."
+      },
+      {
+        id: "Q7",
+        question: "In object-oriented programming, which concept refers to a class defining a method with the same name and type signature as a method in its superclass?",
+        options: { a: "Hiding", b: "Inheritance", c: "Overloading", d: "Overriding" },
+        answer: "d",
+        explanation: "Method Overriding allows a subclass to provide a specific implementation of a method that is already defined in its superclass."
+      },
+      {
+        id: "Q8",
+        question: "Interrupt A (High priority, 0.5ms at t=1, 2.5, 3.5, 5.0) and Interrupt B (Low priority, 1.5ms at t=0, 5.0). How many ms can the main process use CPU between t=0 and t=5ms?",
+        options: { a: "2", b: "2.5", c: "3.5", d: "5" },
+        answer: "a",
+        explanation: "Total time window = 5.0 ms.\nInterrupts executed:\n- Interrupt B at t=0 runs (1.5ms total, but preempted at t=1 by A for 0.5ms).\n- Interrupt A triggers 3 times (t=1, 2.5, 3.5) taking 3 × 0.5ms = 1.5ms.\n- Interrupt B total = 1.5ms.\nTotal Interrupt CPU time = 1.5ms (B) + 1.5ms (A) = 3.0ms.\nMain process CPU time = 5.0 - 3.0 = 2.0 ms."
+      },
+      {
+        id: "Q9",
+        question: "HDD specs: Seek time = 5ms, 6,000 RPM, Transfer rate = 1 MB/s, Controller overhead = 0.1ms. What is average access time to transfer 16 kB?",
+        options: { a: "20.1", b: "25.725", c: "30.725", d: "74.1" },
+        answer: "b",
+        explanation: "1. Rotational latency = (60s / 6000) / 2 = 0.01s / 2 = 5 ms.\n2. Transfer time for 16 kB = 16 kB / 1024 kB/s = 0.015625s = 15.625 ms.\n3. Total Access Time = Seek (5) + Latency (5) + Overhead (0.1) + Transfer (15.625) = 25.725 ms."
+      },
+      {
+        id: "Q10",
+        question: "Which of the following is an appropriate description of a 3D printer's function?",
+        options: {
+          a: "It detects the shape of three-dimensional objects and produces output of 3D data.",
+          b: "It functions by pushing the pins of a high-temperature printing head onto heat-sensitive paper.",
+          c: "It makes three-dimensional objects using methods such as fused filament fabrication.",
+          d: "It projects computer graphics onto uneven three-dimensional objects such as buildings."
+        },
+        answer: "c",
+        explanation: "3D printers construct three-dimensional physical objects layer by layer using techniques like Fused Filament Fabrication (FFF)."
+      },
+      {
+        id: "Q11",
+        question: "Which of the following is the most appropriate explanation of edge computing?",
+        options: {
+          a: "Increasing web UI response times by doing layout processing in browsers.",
+          b: "Increasing the real-time nature of processing by performing primary processing of data on a server close to the origin of data (sensors/devices).",
+          c: "Grouping distant PCs into a supercomputer grid.",
+          d: "Serverless spin-up architecture."
+        },
+        answer: "b",
+        explanation: "Edge computing processes data near the edge of the network (where data is generated) to reduce latency and bandwidth usage."
+      },
+      {
+        id: "Q12",
+        question: "System requires 1 Server (availability a), at least 1 of 3 Clients (availability b), and at least 1 of 2 Printers (availability c). What is the total availability?",
+        options: {
+          a: "a * b^3 * c^2",
+          b: "a * (1 - b^3) * (1 - c^2)",
+          c: "a * (1 - b)^3 * (1 - c)^2",
+          d: "a * (1 - (1 - b)^3) * (1 - (1 - c)^2)"
+        },
+        answer: "d",
+        explanation: "- Server availability = a\n- Availability of at least 1 Client = 1 - (prob all 3 fail) = 1 - (1 - b)^3\n- Availability of at least 1 Printer = 1 - (prob both fail) = 1 - (1 - c)^2\nSystem Availability = a × (1 - (1 - b)³) × (1 - (1 - c)²)."
+      },
+      {
+        id: "Q13",
+        question: "Five processes A(10ms), B(6ms), C(2ms), D(8ms), E(4ms) arrive at time 0. What is the average process turnaround time under FCFS?",
+        options: { a: "14", b: "19.2", c: "20", d: "22" },
+        answer: "c",
+        explanation: "Turnaround times under FCFS:\n- A finishes at 10\n- B finishes at 10 + 6 = 16\n- C finishes at 16 + 2 = 18\n- D finishes at 18 + 8 = 26\n- E finishes at 26 + 4 = 30\nAverage Turnaround = (10 + 16 + 18 + 26 + 30) / 5 = 100 / 5 = 20 ms."
+      },
+      {
+        id: "Q14",
+        question: "In superposition addressing (folding and adding method) for record key 123456, how is the record address calculated?",
+        options: {
+          a: "Converting key to octal and using 361100.",
+          b: "Dividing key by 997 and using remainder 825.",
+          c: "Splitting the record key into 123 and 456 and using their sum, 579, as the address.",
+          d: "Using the record key 123456 as the address."
+        },
+        answer: "c",
+        explanation: "The folding/superposition method splits the key into equal parts (123 and 456) and adds them together (123 + 456 = 579) to form the address."
+      },
+      {
+        id: "Q15",
+        question: "Main memory capacity = 3 frames. Page reference sequence: {1, 2, 3, 2, 1, 4, 5}. Which page is replaced when page 5 is referenced under LRU?",
+        options: { a: "1", b: "2", c: "3", d: "4" },
+        answer: "b",
+        explanation: "Trace:\n- Ref 1, 2, 3 => Frames: [1, 2, 3]\n- Ref 2, 1 => Frames: [3, 2, 1] (Recency order: 1 most recent, 2 next, 3 least)\n- Ref 4 => Replaces 3 => Frames: [2, 1, 4] (Recency: 4, 1, 2)\n- Ref 5 => Replaces least recently used (2)."
+      },
+      {
+        id: "Q16",
+        question: "A logic circuit consisting of an OR gate fed by inverted inputs NOT(A) and NOT(B) is equivalent to which Boolean expression?",
+        options: { a: "NOT(A) · NOT(B)", b: "NOT(A · B)", c: "A · NOT(B)", d: "A · B" },
+        answer: "b",
+        explanation: "According to De Morgan's Law:\nNOT(A) + NOT(B) = NOT(A · B) (NAND gate)."
+      },
+      {
+        id: "Q17",
+        question: "Which computer graphics method reduces the appearance of jagged edges (aliasing) on slanted lines to make them appear smooth?",
+        options: { a: "Anti-aliasing", b: "Bump mapping", c: "Shading", d: "Texture mapping" },
+        answer: "a",
+        explanation: "Anti-aliasing smooths stair-stepped jagged edges on display screens by blending edge pixel colors."
+      },
+      {
+        id: "Q18",
+        question: "Which description correctly explains attributes in the relational model?",
+        options: {
+          a: "Attributes can be defined without names.",
+          b: "Attribute domains cannot overlap.",
+          c: "Duplicate attribute names are allowed in the same relation.",
+          d: "There is no meaning in the order of attributes within a relation, and the relation remains unchanged even if the order is changed."
+        },
+        answer: "d",
+        explanation: "In relational algebra, attributes in a relation are unordered; swapping column order does not change the relation."
+      },
+      {
+        id: "Q19",
+        question: "Given functional dependencies:\n{OrderCode, ProductCode} -> {OrderQty, OrderAmount}\nOrderCode -> {OrderDate, CustomerCode, ManagerCode}\nCustomerCode -> {CustomerName, Address}\nWhich is a transitive functional dependency?",
+        options: {
+          a: "OrderCode → CustomerCode → CustomerAddress",
+          b: "OrderCode → ProductCode → CustomerOrder Quantity",
+          c: "ProductCode → SupplierCode → ProductSalePrice",
+          d: "SupplierCode → SupplierManagerCode → SupplierAddress"
+        },
+        answer: "a",
+        explanation: "OrderCode determines CustomerCode, and CustomerCode determines CustomerAddress. Thus OrderCode -> CustomerCode -> CustomerAddress is a transitive dependency."
+      },
+      {
+        id: "Q20",
+        question: "Which of the following is an appropriate description of a distributed database?",
+        options: {
+          a: "Centralized server shared globally.",
+          b: "Freeware database distributed to researchers.",
+          c: "Synonym for NoSQL.",
+          d: "It stores different parts of a database in different locations, and its processing is distributed across those parts."
+        },
+        answer: "d",
+        explanation: "A distributed database splits database storage across multiple physical nodes connected via a network while processing queries across them."
+      },
+      {
+        id: "Q21",
+        question: "Which SQL clause displays names of employees working in the same department as any employee located in 'New York'?",
+        options: {
+          a: "department_id IN (SELECT department_id FROM Departments WHERE location = 'New York');",
+          b: "department_id NOT IN (SELECT department_id FROM Departments WHERE location = 'New York');",
+          c: "department_id IN (SELECT department_id FROM Employees WHERE location = 'New York');",
+          d: "department_id = ALL (SELECT department_id FROM Employees WHERE location = 'New York');"
+        },
+        answer: "a",
+        explanation: "The query filters employees by subquerying `department_id` from the `Departments` table where `location = 'New York'`."
+      },
+      {
+        id: "Q22",
+        question: "In transaction management (ACID), what condition does the Isolation property ensure?",
+        options: {
+          a: "Data durability after commit.",
+          b: "Database constraints consistency.",
+          c: "Atomicity (all or nothing).",
+          d: "Transactions are executed without affecting each other."
+        },
+        answer: "d",
+        explanation: "Isolation ensures concurrent transactions execute independently without interfering or corrupting each other's intermediate state."
+      },
+      {
+        id: "Q23",
+        question: "Which mechanism prioritizes network traffic based on importance to minimize latency for critical applications?",
+        options: { a: "AAA", b: "PoE", c: "QoS", d: "RTP" },
+        answer: "c",
+        explanation: "Quality of Service (QoS) manages network resources by prioritizing specific types of data packets over traffic queues."
+      },
+      {
+        id: "Q24",
+        question: "Newly added PC5 wants to send data to PC4 (192.168.1.10). What is the destination MAC address used in the ARP request packet?",
+        options: { a: "00:00:00:00:00:00", b: "78:E1:00:3C:A1:8B", c: "78:E1:00:3C:A1:9F", d: "FF:FF:FF:FF:FF:FF" },
+        answer: "d",
+        explanation: "An Address Resolution Protocol (ARP) request is broadcast to all devices on the local subnet, using the broadcast MAC address FF:FF:FF:FF:FF:FF."
+      },
+      {
+        id: "Q25",
+        question: "Which OSI network device performs protocol conversion between networks that differ from the Transport layer upwards?",
+        options: { a: "Bridge", b: "Gateway", c: "Repeater", d: "Router" },
+        answer: "b",
+        explanation: "A Gateway connects heterogeneous networks operating at higher OSI layers (Transport layer and above) by translating protocol formats."
+      },
+      {
+        id: "Q26",
+        question: "Which Internet standard extends email headers to handle non-ASCII text, attachments, audio, and images?",
+        options: { a: "HTML", b: "MHS", c: "MIME", d: "SMTP" },
+        answer: "c",
+        explanation: "Multipurpose Internet Mail Extensions (MIME) extends email capability beyond ASCII text to support multimedia attachments."
+      },
+      {
+        id: "Q27",
+        question: "An attacker leaves a USB drive preloaded with malware in front of an office hoping an employee plugs it in. What social engineering attack is this?",
+        options: { a: "Baiting", b: "Identity theft", c: "Phishing", d: "Pretexting" },
+        answer: "a",
+        explanation: "Baiting leaves physical media (like infected USB sticks) in public places to tempt victims into inserting them into secured computers."
+      },
+      {
+        id: "Q28",
+        question: "When X receives a digitally signed message from Y, which key does X use to verify that the message truly came from Y?",
+        options: { a: "X's private key", b: "X's public key", c: "Y's private key", d: "Y's public key" },
+        answer: "d",
+        explanation: "A digital signature is created using the sender's (Y's) private key and verified by anyone using the sender's (Y's) public key."
+      },
+      {
+        id: "Q29",
+        question: "An attacker poisons Company B's DNS cache server, mapping Company A's domain to malicious Server X. Which users will unintentionally connect to Server X?",
+        options: {
+          a: "Company A employees trying to connect to Company A.",
+          b: "Company A employees trying to connect to Company B.",
+          c: "Company B employees who try to connect to Company A's web server",
+          d: "Company B employees trying to connect to Company B."
+        },
+        answer: "c",
+        explanation: "Company B's employees rely on Company B's poisoned DNS cache server. When they lookup Company A's domain, they are redirected to Server X."
+      },
+      {
+        id: "Q30",
+        question: "In the Fraud Triangle theory (Pressure, Opportunity, Rationalization), which choice correctly describes an element?",
+        options: {
+          a: "'Information and communication' definition.",
+          b: "'Opportunity' refers to the existence of an environment (systems, physical setup, loose rules) that makes fraud possible or easy to commit.",
+          c: "'Pressure' defined as internal guilt justification.",
+          d: "'Rationalization' defined as external sales targets."
+        },
+        answer: "b",
+        explanation: "Opportunity represents internal control weaknesses or system environments that allow an individual to execute fraudulent acts."
+      },
+      {
+        id: "Q31",
+        question: "Which of the following is a core function of an Intrusion Detection System (IDS)?",
+        options: {
+          a: "Verifies PC patch updates.",
+          b: "Self-diagnosis security checklist tool.",
+          c: "It monitors a server or a network and notifies the administrator when it has detected an intrusion or infringement.",
+          d: "Sends fuzzing test data to web endpoints."
+        },
+        answer: "c",
+        explanation: "An IDS monitors network traffic and host activity for unauthorized or suspicious signatures and alerts system administrators."
+      },
+      {
+        id: "Q32",
+        question: "What is the timing and purpose of port scanning performed by an attacker during a system intrusion?",
+        options: {
+          a: "Log erasing after attack.",
+          b: "It is conducted at the preliminary investigation stage in order to look for any service that can be attacked.",
+          c: "Privilege escalation phase.",
+          d: "Data exfiltration phase."
+        },
+        answer: "b",
+        explanation: "Port scanning is done during reconnaissance / preliminary investigation to discover open ports and vulnerable listening services."
+      },
+      {
+        id: "Q33",
+        question: "In architecture [Internet] --HTTPS--> A --[Firewall]--> B --[SSL Accelerator]--> C --[Web Server]--> D --[Database], where should an unencrypted Web Application Firewall (WAF) be installed?",
+        options: { a: "A", b: "B", c: "C", d: "D" },
+        answer: "c",
+        explanation: "Because the WAF cannot decrypt HTTPS traffic, it must be placed at position C (after the SSL accelerator decrypts traffic to plain HTTP before reaching the web server)."
+      },
+      {
+        id: "Q34",
+        question: "Which description accurately describes a UML Use Case diagram?",
+        options: {
+          a: "State machine transitions.",
+          b: "Sequence diagram lifelines.",
+          c: "Activity diagram flow.",
+          d: "It shows the scenarios for how actors, i.e., external users or machines, interact with a system."
+        },
+        answer: "d",
+        explanation: "Use Case diagrams model system functional requirements by depicting actors and their interactions with use cases."
+      },
+      {
+        id: "Q35",
+        question: "Which activity belongs to software architecture design in the development process?",
+        options: {
+          a: "Incremental requirements charting.",
+          b: "Line-by-line coding spec.",
+          c: "Customer requirement sign-off.",
+          d: "Transforming the requirements for the software items into a design that describes its top-level structure and identifies the software components"
+        },
+        answer: "d",
+        explanation: "Software architecture design defines high-level structural composition, sub-system components, modules, and interfaces."
+      },
+      {
+        id: "Q36",
+        question: "Which statement accurately describes state transition testing in system integration testing?",
+        options: {
+          a: "Stateless black box testing.",
+          b: "A method that checks whether a system behaves according to the designed combinations of events and internal states.",
+          c: "Stateless calculation engine testing.",
+          d: "Data flow analysis."
+        },
+        answer: "b",
+        explanation: "State transition testing verifies system behavior under varying event sequences and internal state transitions."
+      },
+      {
+        id: "Q37",
+        question: "Which statement correctly describes an Acceptance Test?",
+        options: {
+          a: "Developer performance benchmark.",
+          b: "Integration interface testing.",
+          c: "Project manager requirements check.",
+          d: "It is conducted by users to confirm that the software is complete and meets the business needs that prompted the software to be developed."
+        },
+        answer: "d",
+        explanation: "Acceptance testing (UAT) is performed by end-users or clients to confirm that the deliverable meets original business requirements before sign-off."
+      },
+      {
+        id: "Q38",
+        question: "Size = 2,000 ksteps. Defect rate = 0.04 defects/kstep. Annual discovery = 20%. Major (20% @ $20k), Minor (80% @ $5k). In year 1, ONLY major defects are fixed. Expected year 1 correction cost?",
+        options: { a: "64,000", b: "128,000", c: "160,000", d: "640,000" },
+        answer: "a",
+        explanation: "1. Total potential defects = 2,000 × 0.04 = 80 defects.\n2. Discovered in Year 1 = 80 × 20% = 16 defects.\n3. Major defects discovered = 16 × 20% = 3.2 defects.\n4. Fix cost = 3.2 × $20,000 = $64,000."
+      },
+      {
+        id: "Q39",
+        question: "What is the definition of Refactoring in software engineering?",
+        options: {
+          a: "In order to improve the maintainability of a program, its internal structure is modified without any change to the external specifications.",
+          b: "Pair programming.",
+          c: "Prototyping.",
+          d: "Test-Driven Development."
+        },
+        answer: "a",
+        explanation: "Refactoring cleans up and restructures existing code internal design without changing its external behavior or functional features."
+      },
+      {
+        id: "Q40",
+        question: "Which of the following is an appropriate explanation of comprehensive patent cross-licensing?",
+        options: {
+          a: "Shared registration cost agreement.",
+          b: "Open source license.",
+          c: "The use of patent rights is mutually licensed among companies in the specified fields of technology or products.",
+          d: "Injunction rights enforcement."
+        },
+        answer: "c",
+        explanation: "Cross-licensing agreements grant two or more companies mutual authorization to utilize specified patents owned by each other."
+      },
+      {
+        id: "Q41",
+        question: "In the PERT network diagram with paths A-C-E-H (15+15+15+10 = 55), A-C-F-G (15+15+15+5 = 50), B-E-H (10+15+10 = 35), B-F-G (10+15+5 = 30), which is the Critical Path?",
+        options: { a: "A, C, E, H", b: "A, C, F, G", c: "B, E, H", d: "B, F, G" },
+        answer: "a",
+        explanation: "Path durations:\n- Path A-C-E-H = 15 + 15 + 15 + 10 = 55 days.\n- Path A-C-F-G = 15 + 15 + 15 + 5 = 50 days.\n- Path B-E-H = 10 + 15 + 10 = 35 days.\n- Path B-F-G = 10 + 15 + 5 = 30 days.\nThe longest path (Critical Path) is A, C, E, H (55 days)."
+      },
+      {
+        id: "Q42",
+        question: "PERT 3-point estimate (Beta distribution): Most Likely (m) = $70,000, Optimistic (o) = $50,000, Pessimistic (p) = $120,000. What is expected cost E?",
+        options: { a: "70,000", b: "75,000", c: "80,000", d: "85,000" },
+        answer: "b",
+        explanation: "PERT Beta Distribution formula = (Optimistic + 4×Most Likely + Pessimistic) / 6\nE = ($50,000 + 4×$70,000 + $120,000) / 6\nE = ($50,000 + $280,000 + $120,000) / 6 = $450,000 / 6 = $75,000."
+      },
+      {
+        id: "Q43",
+        question: "SLA: 30 days/mo, operating 7 AM to 11 PM (16 hrs/day). Target availability >= 99%. Max allowed downtime hours per month?",
+        options: { a: "1.2", b: "3.0", c: "4.8", d: "7.2" },
+        answer: "c",
+        explanation: "Total monthly operational hours = 30 days × 16 hrs/day = 480 hours.\nMaximum allowed downtime = 480 hours × (100% - 99%) = 480 × 0.01 = 4.8 hours."
+      },
+      {
+        id: "Q44",
+        question: "In ITIL service management, what is the relationship between Incident records and Problem records?",
+        options: {
+          a: "A cross-reference to the incident that triggered the problem is included in the record of the problem.",
+          b: "Incident records are deleted when known errors are resolved.",
+          c: "1 Incident is strictly mapped to 1 Problem.",
+          d: "Incidents and Problems use completely disjoint categorization."
+        },
+        answer: "a",
+        explanation: "A Problem record investigates underlying root causes and maintains cross-references to the incident(s) that flagged the issue."
+      },
+      {
+        id: "Q45",
+        question: "During an IT audit of system design controls, which check verifies that user requirements are met?",
+        options: {
+          a: "Coding standards audit.",
+          b: "Program spec mapping.",
+          c: "System test requirements sign-off.",
+          d: "Whether the user department participates in the review of the system design documents"
+        },
+        answer: "d",
+        explanation: "User department sign-off and active participation during system design reviews confirm that user requirements are properly captured."
+      },
+      {
+        id: "Q46",
+        question: "Which feasibility dimension evaluates whether lifetime system financial benefits exceed lifetime costs?",
+        options: { a: "Economic feasibility", b: "Operational feasibility", c: "Scheduling feasibility", d: "Technical feasibility" },
+        answer: "a",
+        explanation: "Economic feasibility conducts cost-benefit analyses to determine whether financial returns justify project expenditure."
+      },
+      {
+        id: "Q47",
+        question: "Which measure mitigates the risk of declining service quality during IT outsourcing?",
+        options: {
+          a: "Itemized fee breakdown in contract.",
+          b: "HR training plan requirements.",
+          c: "In-house cost auditing staff.",
+          d: "Using indexes that demonstrate the service quality (SLA/KPIs) in order to promote improvement activities after agreeing on the desired level of quality."
+        },
+        answer: "d",
+        explanation: "Establishing clear Quality SLAs and performance monitoring metrics ensures outsourced operational quality is maintained."
+      },
+      {
+        id: "Q48",
+        question: "Which modeling technique depicts data flow between internal processes, data stores, and external entities?",
+        options: { a: "Class Diagram", b: "Data Flow Diagram (DFD)", c: "Entity-Relationship Diagram (ERD)", d: "Use Case Diagram" },
+        answer: "b",
+        explanation: "Data Flow Diagrams (DFD) visually model information movement between external entities, processes, and data repositories."
+      },
+      {
+        id: "Q49",
+        question: "Which option correctly defines Benchmarking in corporate management?",
+        options: {
+          a: "It refers to a qualitative and quantitative understanding of a company's own products, services, and operations through comparison with those of competitors or advanced companies.",
+          b: "Business Process Reengineering.",
+          c: "Enterprise Resource Planning.",
+          d: "Core Competence strategy."
+        },
+        answer: "a",
+        explanation: "Benchmarking measures organizational processes and metrics against industry best practices and top-performing peers."
+      },
+      {
+        id: "Q50",
+        question: "Which explanation describes Relationship Marketing?",
+        options: {
+          a: "Flash sales e-commerce.",
+          b: "GPS proximity advertising.",
+          c: "Multi-channel broadcast ads.",
+          d: "It is a marketing technique that aims to acquire stable sales over a long period of time from each customer by maintaining a good connection with the customer."
+        },
+        answer: "d",
+        explanation: "Relationship marketing focuses on long-term customer retention, loyalty, and ongoing engagement rather than short-term individual transactions."
+      },
+      {
+        id: "Q51",
+        question: "Which explanation best defines Enterprise Resource Planning (ERP)?",
+        options: {
+          a: "Wholesale retail channel support.",
+          b: "B2C e-commerce framework.",
+          c: "Sales Force Automation.",
+          d: "It is a method or concept that aims to improve management efficiency by planning and controlling the management resources of an entire company in an effective and comprehensive manner."
+        },
+        answer: "d",
+        explanation: "ERP integrates enterprise-wide management processes (finance, HR, procurement, supply chain) into a unified database system."
+      },
+      {
+        id: "Q52",
+        question: "Which description represents Process Innovation?",
+        options: {
+          a: "Original breakthrough product development.",
+          b: "Development of innovative manufacturing procedures that improve the quality or efficiency of a product",
+          c: "Semiconductor foundry outsourcing.",
+          d: "De facto standard adoption."
+        },
+        answer: "b",
+        explanation: "Process innovation introduces substantially improved production, delivery, or manufacturing procedures."
+      },
+      {
+        id: "Q53",
+        question: "IoT factory matrix: Data collection (A), Data transmission (B), Data analysis (C), Data utilization (D). What example device corresponds to A?",
+        options: { a: "Abnormal value judgment tool", b: "Display for work instructions", c: "Temperature sensor for equipment", d: "Wireless communication within factory" },
+        answer: "c",
+        explanation: "- Data Collection (A) = Temperature sensor for equipment\n- Data Transmission (B) = Wireless communication\n- Data Analysis (C) = Abnormal value judgment tool\n- Data Utilization (D) = Display for work instructions."
+      },
+      {
+        id: "Q54",
+        question: "Which of the following is a key characteristic of RFID / IC tags?",
+        options: {
+          a: "Requires external hard drive storage.",
+          b: "It is stain-resistant, and recorded information can be read wirelessly from the outside of the package.",
+          c: "Requires insertion into magnetic stripe readers.",
+          d: "Requires built-in satellite GPS."
+        },
+        answer: "b",
+        explanation: "RFID tags communicate via radio frequency, allowing non-line-of-sight reading through packaging and resistance to surface dirt."
+      },
+      {
+        id: "Q55",
+        question: "Which explanation defines a Sharing Economy?",
+        options: {
+          a: "Smart city urban infrastructure.",
+          b: "Supply chain anti-inflation growth.",
+          c: "Omnichannel retail integration.",
+          d: "It is a mechanism, mainly between individuals, that uses social media/online platforms to share, lend, or borrow unused assets owned by individuals."
+        },
+        answer: "d",
+        explanation: "Sharing economy platforms allow individuals to rent, share, or monetize underutilized physical assets or services."
+      },
+      {
+        id: "Q56",
+        question: "Which of the following is an example of Green IT initiatives?",
+        options: {
+          a: "Building massive high-power data centers.",
+          b: "Writing general software.",
+          c: "Replacing laptop thin clients with power-heavy desktops.",
+          d: "Using web conferencing instead of traveling to meetings"
+        },
+        answer: "d",
+        explanation: "Green IT promotes eco-friendly technology practices; virtual conferencing reduces carbon emissions associated with business travel."
+      },
+      {
+        id: "Q57",
+        question: "Which of the following is a primary role of a Chief Information Officer (CIO)?",
+        options: {
+          a: "The CIO creates a plan to optimize the effect of investment on information resources across the company to support business strategy when a computerization strategy is established.",
+          b: "Internal IT auditor giving advice.",
+          c: "Help desk manager giving desktop instructions.",
+          d: "Operations shift supervisor."
+        },
+        answer: "a",
+        explanation: "The CIO aligns IT strategy with overall business goals to maximize return on information asset investments."
+      },
+      {
+        id: "Q58",
+        question: "In Quality Management OC curves (percent defective vs lot acceptance probability), when N and n are fixed, how do curves shift as pass quantity C increases from 0 to 1 to 2?",
+        options: { a: "Curve shifts left", b: "Curve shifts right and upward", c: "Intersection at origin", d: "Symmetric inversion" },
+        answer: "b",
+        explanation: "Higher acceptance allowance C increases the probability of accepting a lot at any given defect rate, shifting the OC curve upwards/rightwards (Diagram b)."
+      },
+      {
+        id: "Q59",
+        question: "Which financial statement reports assets, liabilities, and equity of a company at a specific point in time?",
+        options: { a: "Balance sheet", b: "Income statement", c: "Statement of Cash Flows", d: "Statement of Changes in Equity" },
+        answer: "a",
+        explanation: "The Balance Sheet provides a financial snapshot of assets, liabilities, and net equity at a given date."
+      },
+      {
+        id: "Q60",
+        question: "For a shrink-wrap software license, when is the license agreement legally concluded?",
+        options: {
+          a: "When payment is made at retail counter.",
+          b: "When the box is received.",
+          c: "At the time the DVD-ROM package containing the software is opened",
+          d: "When installed on the PC."
+        },
+        answer: "c",
+        explanation: "Under shrink-wrap agreements, breaking the plastic seal/packaging constitutes buyer acceptance of license terms."
+      }
+    ];
+
+    let questions = [...rawQuestions];
+    let currentIndex = 0;
+    let userAnswers = {};
+    let scores = {};
+
+    function loadQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById('qTitle').innerText = `${q.id}. ${q.question}`;
+      
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+
+      const isAnswered = userAnswers[currentIndex] !== undefined;
+
+      Object.keys(q.options).forEach(key => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${key}) ${q.options[key]}`;
+
+        if (userAnswers[currentIndex] === key) {
+          btn.classList.add('selected');
+        }
+
+        if (isAnswered) {
+          btn.disabled = true;
+          if (key === q.answer) {
+            btn.classList.add('correct');
+          } else if (userAnswers[currentIndex] === key) {
+            btn.classList.add('incorrect');
+          }
+        } else {
+          btn.onclick = () => selectOption(key);
+        }
+
+        optionsContainer.appendChild(btn);
+      });
+
+      const expBox = document.getElementById('explanationBox');
+      expBox.innerText = q.explanation;
+      expBox.classList.remove('show');
+      document.getElementById('explainBtn').innerText = "Show Explanation";
+
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+
+      updateScoreBoard();
+    }
+
+    function selectOption(selectedKey) {
+      const q = questions[currentIndex];
+      userAnswers[currentIndex] = selectedKey;
+      scores[currentIndex] = (selectedKey === q.answer);
+      
+      loadQuestion();
+    }
+
+    function toggleExplanation() {
+      const expBox = document.getElementById('explanationBox');
+      const btn = document.getElementById('explainBtn');
+      if (expBox.classList.contains('show')) {
+        expBox.classList.remove('show');
+        btn.innerText = "Show Explanation";
+      } else {
+        expBox.classList.add('show');
+        btn.innerText = "Hide Explanation";
+      }
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        loadQuestion();
+      }
+    }
+
+    function toggleRandomize() {
+      const randomize = document.getElementById('randomizeToggle').checked;
+      if (randomize) {
+        questions = [...rawQuestions].sort(() => Math.random() - 0.5);
+      } else {
+        questions = [...rawQuestions];
+      }
+      currentIndex = 0;
+      userAnswers = {};
+      scores = {};
+      loadQuestion();
+    }
+
+    function updateScoreBoard() {
+      const answeredCount = Object.keys(userAnswers).length;
+      const correctCount = Object.values(scores).filter(Boolean).length;
+      document.getElementById('scoreBoard').innerText = `Score: ${correctCount} / ${answeredCount}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
